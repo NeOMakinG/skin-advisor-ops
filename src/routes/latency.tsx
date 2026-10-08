@@ -14,8 +14,8 @@ import { stepLabel } from "@/schemas/session";
 
 const stepHint = {
   upload: "Selfie leaves the device and lands in storage.",
-  analysis: "Vision model returns concern scores and a confidence.",
-  recommend: "Catalog ranking returns the products to show.",
+  analysis: "Vision model returns concern scores.",
+  recommend: "Catalog ranking returns products to show.",
 } as const;
 
 export function LatencyPage() {

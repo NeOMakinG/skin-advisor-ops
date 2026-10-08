@@ -18,7 +18,7 @@ export function FailureShares({ shares }: { shares: FailureShare[] }) {
             style={{ backgroundColor: failureConfig[s.reason].color }}
             aria-hidden="true"
           />
-          <span className="truncate">{failureLabel[s.reason]}</span>
+          <span className="leading-tight">{failureLabel[s.reason]}</span>
           <span className="tabular text-right">
             <span className="font-medium">{formatPercent(s.share, 0)}</span>
             <span className="ml-1.5 text-xs text-muted-foreground">{formatCount(s.count)}</span>

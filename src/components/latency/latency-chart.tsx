@@ -16,6 +16,7 @@ import {
 import type { LatencyDay } from "@/domain/metrics";
 import { formatDay } from "@/lib/dates";
 import { formatMs } from "@/lib/format";
+import { niceTicks } from "@/lib/ticks";
 import type { Incident } from "@/schemas/session";
 
 // p50, p95 and p99 are ordered, so they take the ordinal ramp: light to dark.
@@ -34,10 +35,8 @@ export function LatencyChart({
   budgetP95: number;
   incidents: Incident[];
 }) {
-  const max = Math.max(budgetP95, ...data.map((d) => d.p99));
-  const step = max > 6000 ? 2000 : max > 2500 ? 1000 : 500;
-  const top = Math.ceil(max / step) * step;
-  const ticks = Array.from({ length: top / step + 1 }, (_, i) => i * step);
+  const ticks = niceTicks(Math.max(budgetP95, ...data.map((d) => d.p99)), 4);
+  const top = ticks[ticks.length - 1] ?? 0;
   return (
     <ChartContainer config={latencyConfig} className="h-52 w-full aspect-auto">
       <LineChart data={data} margin={{ top: 12, right: 12, left: 0, bottom: 0 }}>
@@ -51,7 +50,7 @@ export function LatencyChart({
           tickFormatter={(d: string) => formatDay(d)}
         />
         <YAxis
-          width={44}
+          width={50}
           tickLine={false}
           axisLine={false}
           tickMargin={4}

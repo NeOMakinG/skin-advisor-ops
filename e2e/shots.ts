@@ -16,70 +16,78 @@ export const shots: Shot[] = [
     path: "/",
     steps: async (page) => {
       await expect(page.getByRole("heading", { name: "Overview" })).toBeVisible();
-      await expect(page.getByText("Showing 8 of 8 accounts")).toBeVisible();
+      await expect(page.getByText("252,360").first()).toBeVisible();
+      await expect(page.getByRole("list", { name: "Session funnel" })).toBeVisible();
+      // Pooled view stays quiet, the per-partner check still flags Sakura Skin.
+      const perPartner = page.getByRole("list", { name: "Drift per partner" });
+      await expect(perPartner).toContainText(/Sakura Skin\s*Redness \+\d+\.\d pp/);
+      await expect(perPartner).toContainText(/Coastline Drug\s*Not enough history/);
     },
   },
   {
-    name: "overview-filtered",
-    path: "/",
+    name: "overview-drift",
+    path: "/?partner=prt_sakura&range=14",
     steps: async (page) => {
-      await page.getByLabel("Filter accounts").fill("credit");
-      await expect(page.getByText("Showing 2 of 8 accounts")).toBeVisible();
-      await page.getByRole("button", { name: "Balance" }).click();
-      await expect(page.getByRole("columnheader", { name: "Balance" })).toHaveAttribute(
+      await expect(page.getByRole("combobox", { name: "Partner" })).toContainText("Sakura Skin");
+      await expect(page.getByRole("status").filter({ hasText: "week over week" })).toContainText(
+        /Redness \+\d+\.\d pp week over week/,
+      );
+      await expect(page.getByText("vs previous 14 days").first()).toBeVisible();
+      await expect(page.getByText("Concern model 2.3 rollout")).toBeVisible();
+    },
+  },
+  {
+    name: "failures",
+    path: "/failures?partner=prt_coastline&range=7",
+    steps: async (page) => {
+      await expect(page.getByRole("heading", { name: "Failures", exact: true })).toBeVisible();
+      const table = page.getByRole("table").first();
+      const firstRow = table.getByRole("row").nth(1);
+      await expect(firstRow).toContainText("Galaxy S24");
+      await expect(firstRow).toContainText("Camera permission denied");
+      // Sorting by volume puts the busiest segment first; sorting back by rate restores the story.
+      await page.getByRole("button", { name: "Sessions" }).click();
+      await expect(page.getByRole("columnheader", { name: "Sessions" })).toHaveAttribute(
         "aria-sort",
         "descending",
       );
+      await expect(table.getByRole("row").nth(1)).toContainText("iPhone 15");
+      await page.getByRole("button", { name: "Failure rate" }).click();
+      await expect(page.getByRole("columnheader", { name: "Failure rate" })).toHaveAttribute(
+        "aria-sort",
+        "descending",
+      );
+      await expect(table.getByRole("row").nth(1)).toContainText("Galaxy S24");
     },
   },
   {
-    name: "account-credit",
-    path: "/accounts/acc_003",
+    name: "latency",
+    path: "/latency",
     steps: async (page) => {
-      await expect(page.getByRole("heading", { name: "Fleet Fuel Card" })).toBeVisible();
-      await expect(page.getByText("Utilization")).toBeVisible();
-      await expect(page.getByRole("progressbar", { name: "Credit utilization" })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "Latency and health" })).toBeVisible();
+      await expect(page.getByText("Analysis workers saturated")).toBeVisible();
+      await expect(page.locator("[aria-label^='Incident on']")).toHaveCount(3);
+      await expect(page.getByText("within the 2.5 s budget")).toBeVisible();
     },
   },
   {
-    name: "edit-dialog",
-    path: "/accounts/acc_003",
+    name: "session-detail",
+    path: "/sessions?partner=prt_sakura&range=28",
     steps: async (page) => {
-      await page.getByRole("button", { name: "Edit" }).click();
-      await expect(page.getByRole("dialog", { name: "Edit account" })).toBeVisible();
-      await page.getByLabel("Credit limit (USD)").fill("1000");
-      await page.getByRole("button", { name: "Save changes" }).click();
-      await expect(page.getByRole("alert")).toContainText("cannot be below the amount owed");
-    },
-  },
-  {
-    name: "edit-saved",
-    path: "/accounts/acc_003",
-    steps: async (page) => {
-      await page.getByRole("button", { name: "Edit" }).click();
-      await page.getByLabel("Name").fill("Fleet Fuel Cards");
-      await page.getByRole("button", { name: "Save changes" }).click();
-      await expect(page.getByRole("dialog")).toBeHidden();
-      await expect(page.getByRole("heading", { name: "Fleet Fuel Cards" })).toBeVisible();
-    },
-  },
-  {
-    name: "edit-locked",
-    path: "/accounts/acc_001",
-    steps: async (page) => {
-      await page.getByRole("combobox", { name: "Signed in as" }).click();
-      await page.getByRole("option", { name: /Mei Lindqvist/ }).click();
-      await expect(page.getByRole("heading", { name: "Northwind Payroll" })).toBeVisible();
-      await expect(page.getByRole("button", { name: "Edit" })).toBeDisabled();
-      await page.getByRole("button", { name: "Edit" }).hover();
-      await expect(page.getByRole("tooltip")).toContainText("Only admins or the account owner");
-    },
-  },
-  {
-    name: "not-found",
-    path: "/accounts/acc_404",
-    steps: async (page) => {
-      await expect(page.getByRole("heading", { name: "Account not found" })).toBeVisible();
+      await expect(page.getByText("Showing 1 to 12 of 70 sessions")).toBeVisible();
+      await page.getByRole("combobox", { name: "Outcome" }).click();
+      await page.getByRole("option", { name: "Purchased" }).click();
+      await expect(page.getByText(/Showing 1 to \d+ of \d+ sessions/)).toBeVisible();
+      await expect(page.getByText("Showing 1 to 12 of 70 sessions")).toBeHidden();
+      await page
+        .getByRole("button", { name: /Open session/ })
+        .first()
+        .click();
+      const sheet = page.getByRole("dialog");
+      await expect(sheet).toContainText("Recommendations served");
+      await expect(sheet).toContainText("Analysis result");
+      await expect(sheet).toContainText("IDR");
+      await expect(sheet.getByText("Purchased")).toBeVisible();
     },
   },
 ];

@@ -1,5 +1,5 @@
 import { CheckCircle2Icon, CircleDashedIcon, TriangleAlertIcon } from "lucide-react";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts";
 import {
   type ChartConfig,
   ChartContainer,
@@ -34,18 +34,6 @@ export function DriftPanel({
   return (
     <div className="flex flex-col gap-4">
       <DriftStatus outcome={outcome} />
-      {outcome.kind === "report" ? <DriftChart report={outcome.report} /> : null}
-      {rollouts.length > 0 ? (
-        <ul className="flex flex-col gap-1 text-xs text-muted-foreground">
-          {rollouts.map((r) => (
-            <li key={r.id}>
-              {formatDay(r.date)}: {r.title}
-              {r.partnerId ? ` (${partners.find((p) => p.id === r.partnerId)?.name ?? ""})` : ""}.
-              Shares after this date are compared against the week before it.
-            </li>
-          ))}
-        </ul>
-      ) : null}
       {perPartner.length > 0 ? (
         <ul className="divide-y rounded-lg border text-sm" aria-label="Drift per partner">
           {perPartner.map(({ partnerId, outcome: o }) => {
@@ -57,6 +45,18 @@ export function DriftPanel({
               </li>
             );
           })}
+        </ul>
+      ) : null}
+      {outcome.kind === "report" ? <DriftChart report={outcome.report} /> : null}
+      {rollouts.length > 0 ? (
+        <ul className="flex flex-col gap-1 text-xs text-muted-foreground">
+          {rollouts.map((r) => (
+            <li key={r.id}>
+              {formatDay(r.date)}: {r.title}
+              {r.partnerId ? ` (${partners.find((p) => p.id === r.partnerId)?.name ?? ""})` : ""}.
+              The two weeks being compared sit on either side of this date.
+            </li>
+          ))}
         </ul>
       ) : null}
     </div>
@@ -190,7 +190,7 @@ function DriftChart({ report }: { report: DriftReport }) {
           <YAxis
             type="category"
             dataKey="concern"
-            width={84}
+            width={96}
             tickLine={false}
             interval={0}
             axisLine={false}
@@ -218,7 +218,15 @@ function DriftChart({ report }: { report: DriftReport }) {
             radius={[0, 3, 3, 0]}
             maxBarSize={10}
             isAnimationActive={false}
-          />
+          >
+            {data.map((d) => (
+              // Flagged concerns take the warning status color; the callout above names them.
+              <Cell
+                key={d.concern}
+                fill={d.flagged ? "var(--status-warning)" : "var(--color-current)"}
+              />
+            ))}
+          </Bar>
         </BarChart>
       </ChartContainer>
     </div>

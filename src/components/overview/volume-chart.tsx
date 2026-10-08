@@ -8,6 +8,7 @@ import {
 import type { DayVolume } from "@/domain/metrics";
 import { formatDay } from "@/lib/dates";
 import { formatCompactCount, formatCount } from "@/lib/format";
+import { niceTicks } from "@/lib/ticks";
 
 const config = {
   started: { label: "Started", color: "var(--ramp-2)" },
@@ -15,6 +16,7 @@ const config = {
 } satisfies ChartConfig;
 
 export function VolumeChart({ data }: { data: DayVolume[] }) {
+  const ticks = niceTicks(Math.max(0, ...data.map((d) => d.started)));
   return (
     <ChartContainer config={config} className="h-56 w-full aspect-auto">
       <AreaChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
@@ -38,6 +40,8 @@ export function VolumeChart({ data }: { data: DayVolume[] }) {
           tickLine={false}
           axisLine={false}
           tickMargin={4}
+          domain={[0, ticks[ticks.length - 1] ?? 0]}
+          ticks={ticks}
           tickFormatter={(v: number) => formatCompactCount(v)}
         />
         <ChartTooltip

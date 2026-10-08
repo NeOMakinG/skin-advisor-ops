@@ -78,11 +78,11 @@ export const metricsRouter = router({
             partners.map(async (p) => ({ partnerId: p.id, outcome: await runDrift(p.id) })),
           )
         : [];
-    // Model rollouts in the current week are the first thing to check when a share moves.
+    // Model rollouts inside the two compared weeks are the first thing to check when a share moves.
     const rollouts = incidents.filter(
       (i) =>
         i.durationMin === 0 &&
-        i.date > addDays(DATA_END, -7) &&
+        i.date >= addDays(DATA_END, -14) &&
         (input.partner === "all" || i.partnerId === null || i.partnerId === input.partner),
     );
     return { scoped, perPartner, rollouts };

@@ -51,7 +51,7 @@ export function FailuresPage() {
                 Stacked by reason. A rising timeout band usually lines up with a latency incident.
               </CardDescription>
             </CardHeader>
-            <CardContent className="grid gap-6 lg:grid-cols-[1fr_16rem]">
+            <CardContent className="grid gap-6 lg:grid-cols-[1fr_17rem]">
               <FailuresChart data={query.data.byDay} />
               <FailureShares shares={query.data.shares} />
             </CardContent>

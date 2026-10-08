@@ -4,20 +4,13 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import type { FailureDay } from "@/domain/metrics";
 import { formatDay } from "@/lib/dates";
 import { formatCompactCount, formatCount } from "@/lib/format";
+import { niceTicks } from "@/lib/ticks";
 import { FailureReason } from "@/schemas/session";
 
-function niceTicks(data: FailureDay[]) {
-  const max = Math.max(
-    0,
-    ...data.map((d) => FailureReason.options.reduce((sum, r) => sum + d[r], 0)),
-  );
-  const step = max > 4000 ? 1000 : max > 1500 ? 500 : max > 600 ? 200 : 100;
-  const top = Math.ceil(max / step) * step || step;
-  return Array.from({ length: top / step + 1 }, (_, i) => i * step);
-}
-
 export function FailuresChart({ data }: { data: FailureDay[] }) {
-  const ticks = niceTicks(data);
+  const ticks = niceTicks(
+    Math.max(0, ...data.map((d) => FailureReason.options.reduce((sum, r) => sum + d[r], 0))),
+  );
   return (
     <ChartContainer config={failureConfig} className="h-64 w-full aspect-auto">
       <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap={3}>
@@ -56,7 +49,7 @@ export function FailuresChart({ data }: { data: FailureDay[] }) {
             fill={`var(--color-${reason})`}
             stroke="var(--card)"
             strokeWidth={1}
-            maxBarSize={22}
+            maxBarSize={40}
             radius={i === FailureReason.options.length - 1 ? [3, 3, 0, 0] : 0}
             isAnimationActive={false}
           />

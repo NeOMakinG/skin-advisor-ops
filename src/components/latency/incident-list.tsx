@@ -41,13 +41,19 @@ export function IncidentList({
               <p className="mt-1 max-w-prose text-sm text-muted-foreground">{incident.summary}</p>
             </div>
             <div className="flex flex-row items-center gap-3 text-xs text-muted-foreground sm:flex-col sm:items-end sm:gap-1">
-              <span className="tabular">
-                p99 peak{" "}
-                <span className="font-medium text-foreground">{formatMs(incident.peakP99Ms)}</span>
-              </span>
               {incident.durationMin > 0 ? (
-                <span className="tabular">{incident.durationMin} min</span>
-              ) : null}
+                <>
+                  <span className="tabular">
+                    p99 peak{" "}
+                    <span className="font-medium text-foreground">
+                      {formatMs(incident.peakP99Ms)}
+                    </span>
+                  </span>
+                  <span className="tabular">{incident.durationMin} min</span>
+                </>
+              ) : (
+                <span>Rollout</span>
+              )}
               {incident.status === "resolved" ? (
                 <span className="flex items-center gap-1 text-status-good">
                   <ActivityIcon className="size-3.5" aria-hidden="true" />
