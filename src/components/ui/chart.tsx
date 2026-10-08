@@ -92,4 +92,28 @@ function ChartTooltipContent({
   );
 }
 
-export { ChartContainer, ChartTooltip, ChartTooltipContent };
+// Legend for two or more series: identity never relies on color alone, so each entry is
+// a swatch plus its label.
+function ChartLegend({ config, className }: { config: ChartConfig; className?: string }) {
+  return (
+    <ul
+      className={cn(
+        "flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground",
+        className,
+      )}
+    >
+      {Object.entries(config).map(([key, item]) => (
+        <li key={key} className="flex items-center gap-1.5">
+          <span
+            className="size-2.5 rounded-[2px]"
+            style={{ backgroundColor: item.color }}
+            aria-hidden="true"
+          />
+          {item.label}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+export { ChartContainer, ChartLegend, ChartTooltip, ChartTooltipContent };

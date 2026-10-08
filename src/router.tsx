@@ -5,14 +5,19 @@ import {
   createRouter,
 } from "@tanstack/react-router";
 import { AppShell } from "@/components/layout/app-shell";
-import { AccountPage } from "@/routes/account";
+import { FailuresPage } from "@/routes/failures";
+import { LatencyPage } from "@/routes/latency";
 import { NotFoundPage } from "@/routes/not-found";
 import { OverviewPage } from "@/routes/overview";
+import { SessionsPage } from "@/routes/sessions";
+import { Scope } from "@/schemas/scope";
 
 // Code-based routes (no codegen). Hash history keeps deep links working on GitHub Pages.
+// The root route validates the shared scope (partner, range) so every child reads it.
 export const rootRoute = createRootRoute({
   component: AppShell,
   notFoundComponent: NotFoundPage,
+  validateSearch: Scope,
 });
 
 export const overviewRoute = createRoute({
@@ -21,13 +26,30 @@ export const overviewRoute = createRoute({
   component: OverviewPage,
 });
 
-export const accountRoute = createRoute({
+export const failuresRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/accounts/$accountId",
-  component: AccountPage,
+  path: "/failures",
+  component: FailuresPage,
 });
 
-const routeTree = rootRoute.addChildren([overviewRoute, accountRoute]);
+export const latencyRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/latency",
+  component: LatencyPage,
+});
+
+export const sessionsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/sessions",
+  component: SessionsPage,
+});
+
+const routeTree = rootRoute.addChildren([
+  overviewRoute,
+  failuresRoute,
+  latencyRoute,
+  sessionsRoute,
+]);
 
 export const router = createRouter({
   routeTree,
