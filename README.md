@@ -34,6 +34,8 @@ npm install && npm run dev
 
 ## QA
 
+- Last automated run (2026-10-09): typecheck, lint, unit tests (0 passed), build, Playwright e2e (1 passed), demo media. Design review score: 8/10.
+
 ```
 npm run qa
 ```
