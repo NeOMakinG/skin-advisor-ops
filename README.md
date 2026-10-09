@@ -32,16 +32,9 @@ Revieve runs skin analysis and try-on advisors for over a hundred brands and ret
 npm install && npm run dev
 ```
 
-## QA
+## Tests
 
-- Last automated run (2026-10-09): typecheck, lint, unit tests (17 passed), build, Playwright e2e (1 passed), demo media. Design review score: 8/10.
-
-
-```
-npm run qa
-```
-
-Runs typecheck, Biome lint, Vitest, the Vite build, the Playwright walk and the media export. Unit tests cover the drift service (flagged shift, stable partner, insufficient history, empty scope), the funnel and failure aggregations, the generated data against the stated mix and latency baselines, axis tick rounding, and the KPI strip and sessions table components. The e2e opens each screen at 1440x900, checks the pooled and per-partner drift verdicts, sorts the failure table, counts incident markers, filters sessions and opens the detail drawer, saving a screenshot of each state.
+`npm install && npm run qa` type-checks and lints the code, runs 17 unit tests, builds the site and runs a Playwright end-to-end test that walks the main screens (it also records the screenshots and the demo video in `docs/`).
 
 ## Notes
 
