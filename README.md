@@ -34,7 +34,7 @@ npm install && npm run dev
 
 ## Tests
 
-`npm install && npm run qa` type-checks and lints the code, runs 17 unit tests, builds the site and runs a Playwright end-to-end test that walks the main screens (it also records the screenshots and the demo video in `docs/`).
+`npm install && npm run qa` type-checks and lints the code, runs 21 unit tests, builds the site and runs a Playwright end-to-end test that walks the main screens (it also records the screenshots and the demo video in `docs/`).
 
 ## Notes
 
